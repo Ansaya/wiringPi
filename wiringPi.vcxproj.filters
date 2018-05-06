@@ -1,0 +1,634 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="debian">
+      <UniqueIdentifier>{0cb15e0f-aae5-46e5-9cce-9af0ff972a7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="debian-template">
+      <UniqueIdentifier>{4453789e-63db-4a30-8f77-f200b9319646}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="devLib">
+      <UniqueIdentifier>{dd476b56-6f60-47af-a2c4-45fc1cdc31a7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples">
+      <UniqueIdentifier>{36d857f0-f8dc-4504-a94b-a6868c5fbd6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gpio">
+      <UniqueIdentifier>{24484cb5-9050-4f40-9123-456b8375fe85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pins">
+      <UniqueIdentifier>{b4988abf-9b91-4b1f-9eef-64d96a7ae24e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wiringPi">
+      <UniqueIdentifier>{812f7999-21a9-4ada-a2cf-527139b1d4ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="wiringPiD">
+      <UniqueIdentifier>{8657bd45-ad5f-45fd-9c7f-83c9ed5f3ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\Gertboard">
+      <UniqueIdentifier>{c86887f2-7540-4c33-8be1-9b7a0bdb9d4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\PiFace">
+      <UniqueIdentifier>{b50f51a4-ee6d-4c10-a1ae-ad92b3c2faeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\PiGlow">
+      <UniqueIdentifier>{f42d1ad7-b530-4396-96e1-29bffa4ca888}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\q2w">
+      <UniqueIdentifier>{93b68850-f4bc-4064-b2f0-d534553b8f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\scrollPath">
+      <UniqueIdentifier>{75d45906-5657-4ad3-b2d6-1a50a0072f0f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="debian\changelog">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\compat">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\control">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\copyright">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\libwiringpi2.install">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\libwiringpi2.shlibs">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\libwiringpi-dev.dirs">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\libwiringpi-dev.install">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\rules">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\wiringpi.dirs">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian\wiringpi.install">
+      <Filter>debian</Filter>
+    </None>
+    <None Include="debian-template\wiringPi\DEBIAN\control">
+      <Filter>debian-template</Filter>
+    </None>
+    <None Include="debian-template\wiringPi\DEBIAN\postinst">
+      <Filter>debian-template</Filter>
+    </None>
+    <None Include="debian-template\wiringPi\DEBIAN\postrm">
+      <Filter>debian-template</Filter>
+    </None>
+    <None Include="devLib\Makefile">
+      <Filter>devLib</Filter>
+    </None>
+    <None Include="examples\blink.rtb">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\blink.sh">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\COPYING.LESSER">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\Makefile">
+      <Filter>examples</Filter>
+    </None>
+    <None Include="examples\Gertboard\Makefile">
+      <Filter>examples\Gertboard</Filter>
+    </None>
+    <None Include="examples\scrollPhat\Makefile">
+      <Filter>examples\scrollPath</Filter>
+    </None>
+    <None Include="examples\q2w\blink.sh">
+      <Filter>examples\q2w</Filter>
+    </None>
+    <None Include="examples\q2w\Makefile">
+      <Filter>examples\q2w</Filter>
+    </None>
+    <None Include="examples\PiGlow\Makefile">
+      <Filter>examples\PiGlow</Filter>
+    </None>
+    <None Include="examples\PiFace\Makefile">
+      <Filter>examples\PiFace</Filter>
+    </None>
+    <None Include="gpio\COPYING.LESSER">
+      <Filter>gpio</Filter>
+    </None>
+    <None Include="gpio\gpio.1">
+      <Filter>gpio</Filter>
+    </None>
+    <None Include="gpio\Makefile">
+      <Filter>gpio</Filter>
+    </None>
+    <None Include="gpio\pintest">
+      <Filter>gpio</Filter>
+    </None>
+    <None Include="gpio\test.sh">
+      <Filter>gpio</Filter>
+    </None>
+    <None Include="pins\Makefile">
+      <Filter>pins</Filter>
+    </None>
+    <None Include="pins\pins.pdf">
+      <Filter>pins</Filter>
+    </None>
+    <None Include="pins\pins.tex">
+      <Filter>pins</Filter>
+    </None>
+    <None Include="wiringPi\COPYING.LESSER">
+      <Filter>wiringPi</Filter>
+    </None>
+    <None Include="wiringPi\Makefile">
+      <Filter>wiringPi</Filter>
+    </None>
+    <None Include="wiringPi\noMoreStatic">
+      <Filter>wiringPi</Filter>
+    </None>
+    <None Include="wiringPiD\Makefile">
+      <Filter>wiringPiD</Filter>
+    </None>
+    <None Include="build" />
+    <None Include="COPYING.LESSER" />
+    <None Include="INSTALL" />
+    <None Include="newVersion" />
+    <None Include="People" />
+    <None Include="update" />
+    <None Include="VERSION" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="devLib\ds1302.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\gertboard.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\lcd.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\lcd128x64.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\maxdetect.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\piFace.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\piFaceOld.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\piGlow.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\piNes.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="devLib\scrollPhat.c">
+      <Filter>devLib</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink6drcs.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink8.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink8-drcn.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink12.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink12drcs.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\blink-thread.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\clock.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\delayTest.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\ds1302.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\isr.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\isr-osc.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\lcd.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\lcd-adafruit.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\lowPower.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\max31855.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\nes.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\okLed.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\pwm.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\rht03.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\serialRead.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\serialTest.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\servo.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\softPwm.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\softTone.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\speed.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\spiSpeed.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\wfi.c">
+      <Filter>examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\7segments.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\buttons.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\gertboard.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\record.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\temperature.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\voltmeter.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\Gertboard\vumeter.c">
+      <Filter>examples\Gertboard</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\scrollPhat\scphat.c">
+      <Filter>examples\scrollPath</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\scrollPhat\test.c">
+      <Filter>examples\scrollPath</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\binary.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\blink.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\blink-io.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\bright.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\button.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\q2w\volts.c">
+      <Filter>examples\q2w</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiGlow\piglow.c">
+      <Filter>examples\PiGlow</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiGlow\piGlow0.c">
+      <Filter>examples\PiGlow</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiGlow\piGlow1.c">
+      <Filter>examples\PiGlow</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\blink.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\buttons.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\ladder.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\metro.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\motor.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\PiFace\reaction.c">
+      <Filter>examples\PiFace</Filter>
+    </ClCompile>
+    <ClCompile Include="gpio\gpio.c">
+      <Filter>gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="gpio\readall.c">
+      <Filter>gpio</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\ads1115.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\bmp180.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\drcNet.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\drcSerial.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\ds18b20.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\htu21d.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\max5322.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\max31855.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp23s08.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp23s17.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp3002.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp3004.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp3422.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp4802.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp23008.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp23016.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\mcp23017.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\pcf8574.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\pcf8591.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\piHiPri.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\piThread.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\pseudoPins.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\rht03.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\sn3218.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\softPwm.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\softServo.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\softTone.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\sr595.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wiringPi.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wiringPiI2C.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wiringPiSPI.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wiringSerial.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wiringShift.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPi\wpiExtensions.c">
+      <Filter>wiringPi</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPiD\daemonise.c">
+      <Filter>wiringPiD</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPiD\network.c">
+      <Filter>wiringPiD</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPiD\runRemote.c">
+      <Filter>wiringPiD</Filter>
+    </ClCompile>
+    <ClCompile Include="wiringPiD\wiringpid.c">
+      <Filter>wiringPiD</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="devLib\ds1302.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\font.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\gertboard.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\lcd.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\lcd128x64.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\maxdetect.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\piFace.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\piGlow.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\piNes.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\scrollPhat.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="devLib\scrollPhatFont.h">
+      <Filter>devLib</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\header.h">
+      <Filter>examples</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\ads1115.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\bmp180.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\drcNet.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\drcSerial.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\ds18b20.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\htu21d.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\max5322.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\max31855.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23s08.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23s17.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23x08.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23x0817.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp3002.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp3004.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp3422.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp4802.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23008.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23016.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23016reg.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\mcp23017.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\pcf8574.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\pcf8591.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\pseudoPins.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\rht03.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\sn3218.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\softPwm.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\softServo.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\softTone.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\sr595.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wiringPi.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wiringPiI2C.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wiringPiSPI.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wiringSerial.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wiringShift.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPi\wpiExtensions.h">
+      <Filter>wiringPi</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPiD\daemonise.h">
+      <Filter>wiringPiD</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPiD\drcNetCmd.h">
+      <Filter>wiringPiD</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPiD\network.h">
+      <Filter>wiringPiD</Filter>
+    </ClInclude>
+    <ClInclude Include="wiringPiD\runRemote.h">
+      <Filter>wiringPiD</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="examples\README.TXT">
+      <Filter>examples</Filter>
+    </Text>
+    <Text Include="README.TXT" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0df7955b-16cd-403a-b9f2-a53cc5ef56dc}</ProjectGuid>
+    <Keyword>Linux</Keyword>
+    <RootNamespace>wiringPi</RootNamespace>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{FC1A4D80-50E9-41DA-9192-61C0DBAA00D2}</LinuxProjectType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <ConfigurationType>Makefile</ConfigurationType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>./build clean; ./build</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>./build clean</RemoteCleanCommandLine>
+    <NMakeIncludeSearchPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;C:\Program Files %28x86%29\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\c++\6;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>./build clean; ./build</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>./build clean</RemoteCleanCommandLine>
+    <NMakeIncludeSearchPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;C:\Program Files %28x86%29\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\c++\6;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="build" />
+    <None Include="COPYING.LESSER" />
+    <None Include="debian-template\wiringPi\DEBIAN\control" />
+    <None Include="debian-template\wiringPi\DEBIAN\postinst" />
+    <None Include="debian-template\wiringPi\DEBIAN\postrm" />
+    <None Include="debian\changelog" />
+    <None Include="debian\compat" />
+    <None Include="debian\control" />
+    <None Include="debian\copyright" />
+    <None Include="debian\libwiringpi-dev.dirs" />
+    <None Include="debian\libwiringpi-dev.install" />
+    <None Include="debian\libwiringpi2.install" />
+    <None Include="debian\libwiringpi2.shlibs" />
+    <None Include="debian\rules" />
+    <None Include="debian\wiringpi.dirs" />
+    <None Include="debian\wiringpi.install" />
+    <None Include="devLib\Makefile" />
+    <None Include="examples\blink.rtb" />
+    <None Include="examples\blink.sh" />
+    <None Include="examples\COPYING.LESSER" />
+    <None Include="examples\Gertboard\Makefile" />
+    <None Include="examples\Makefile" />
+    <None Include="examples\PiFace\Makefile" />
+    <None Include="examples\PiGlow\Makefile" />
+    <None Include="examples\q2w\blink.sh" />
+    <None Include="examples\q2w\Makefile" />
+    <None Include="examples\scrollPhat\Makefile" />
+    <None Include="gpio\COPYING.LESSER" />
+    <None Include="gpio\gpio.1" />
+    <None Include="gpio\Makefile" />
+    <None Include="gpio\pintest" />
+    <None Include="gpio\test.sh" />
+    <None Include="INSTALL" />
+    <None Include="newVersion" />
+    <None Include="People" />
+    <None Include="pins\Makefile" />
+    <None Include="pins\pins.pdf" />
+    <None Include="pins\pins.tex" />
+    <None Include="update" />
+    <None Include="VERSION" />
+    <None Include="wiringPiD\Makefile" />
+    <None Include="wiringPi\COPYING.LESSER" />
+    <None Include="wiringPi\Makefile" />
+    <None Include="wiringPi\noMoreStatic" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="examples\README.TXT" />
+    <Text Include="README.TXT" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="devLib\ds1302.h" />
+    <ClInclude Include="devLib\font.h" />
+    <ClInclude Include="devLib\gertboard.h" />
+    <ClInclude Include="devLib\lcd.h" />
+    <ClInclude Include="devLib\lcd128x64.h" />
+    <ClInclude Include="devLib\maxdetect.h" />
+    <ClInclude Include="devLib\piFace.h" />
+    <ClInclude Include="devLib\piGlow.h" />
+    <ClInclude Include="devLib\piNes.h" />
+    <ClInclude Include="devLib\scrollPhat.h" />
+    <ClInclude Include="devLib\scrollPhatFont.h" />
+    <ClInclude Include="examples\header.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="wiringPiD\daemonise.h" />
+    <ClInclude Include="wiringPiD\drcNetCmd.h" />
+    <ClInclude Include="wiringPiD\network.h" />
+    <ClInclude Include="wiringPiD\runRemote.h" />
+    <ClInclude Include="wiringPi\ads1115.h" />
+    <ClInclude Include="wiringPi\bmp180.h" />
+    <ClInclude Include="wiringPi\drcNet.h" />
+    <ClInclude Include="wiringPi\drcSerial.h" />
+    <ClInclude Include="wiringPi\ds18b20.h" />
+    <ClInclude Include="wiringPi\htu21d.h" />
+    <ClInclude Include="wiringPi\max31855.h" />
+    <ClInclude Include="wiringPi\max5322.h" />
+    <ClInclude Include="wiringPi\mcp23008.h" />
+    <ClInclude Include="wiringPi\mcp23016.h" />
+    <ClInclude Include="wiringPi\mcp23016reg.h" />
+    <ClInclude Include="wiringPi\mcp23017.h" />
+    <ClInclude Include="wiringPi\mcp23s08.h" />
+    <ClInclude Include="wiringPi\mcp23s17.h" />
+    <ClInclude Include="wiringPi\mcp23x08.h" />
+    <ClInclude Include="wiringPi\mcp23x0817.h" />
+    <ClInclude Include="wiringPi\mcp3002.h" />
+    <ClInclude Include="wiringPi\mcp3004.h" />
+    <ClInclude Include="wiringPi\mcp3422.h" />
+    <ClInclude Include="wiringPi\mcp4802.h" />
+    <ClInclude Include="wiringPi\pcf8574.h" />
+    <ClInclude Include="wiringPi\pcf8591.h" />
+    <ClInclude Include="wiringPi\pseudoPins.h" />
+    <ClInclude Include="wiringPi\rht03.h" />
+    <ClInclude Include="wiringPi\sn3218.h" />
+    <ClInclude Include="wiringPi\softPwm.h" />
+    <ClInclude Include="wiringPi\softServo.h" />
+    <ClInclude Include="wiringPi\softTone.h" />
+    <ClInclude Include="wiringPi\sr595.h" />
+    <ClInclude Include="wiringPi\wiringPi.h" />
+    <ClInclude Include="wiringPi\wiringPiI2C.h" />
+    <ClInclude Include="wiringPi\wiringPiSPI.h" />
+    <ClInclude Include="wiringPi\wiringSerial.h" />
+    <ClInclude Include="wiringPi\wiringShift.h" />
+    <ClInclude Include="wiringPi\wpiExtensions.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="devLib\ds1302.c" />
+    <ClCompile Include="devLib\gertboard.c" />
+    <ClCompile Include="devLib\lcd.c" />
+    <ClCompile Include="devLib\lcd128x64.c" />
+    <ClCompile Include="devLib\maxdetect.c" />
+    <ClCompile Include="devLib\piFace.c" />
+    <ClCompile Include="devLib\piFaceOld.c" />
+    <ClCompile Include="devLib\piGlow.c" />
+    <ClCompile Include="devLib\piNes.c" />
+    <ClCompile Include="devLib\scrollPhat.c" />
+    <ClCompile Include="examples\blink-thread.c" />
+    <ClCompile Include="examples\blink.c" />
+    <ClCompile Include="examples\blink12.c" />
+    <ClCompile Include="examples\blink12drcs.c" />
+    <ClCompile Include="examples\blink6drcs.c" />
+    <ClCompile Include="examples\blink8-drcn.c" />
+    <ClCompile Include="examples\blink8.c" />
+    <ClCompile Include="examples\clock.c" />
+    <ClCompile Include="examples\delayTest.c" />
+    <ClCompile Include="examples\ds1302.c" />
+    <ClCompile Include="examples\Gertboard\7segments.c" />
+    <ClCompile Include="examples\Gertboard\buttons.c" />
+    <ClCompile Include="examples\Gertboard\gertboard.c" />
+    <ClCompile Include="examples\Gertboard\record.c" />
+    <ClCompile Include="examples\Gertboard\temperature.c" />
+    <ClCompile Include="examples\Gertboard\voltmeter.c" />
+    <ClCompile Include="examples\Gertboard\vumeter.c" />
+    <ClCompile Include="examples\isr-osc.c" />
+    <ClCompile Include="examples\isr.c" />
+    <ClCompile Include="examples\lcd-adafruit.c" />
+    <ClCompile Include="examples\lcd.c" />
+    <ClCompile Include="examples\lowPower.c" />
+    <ClCompile Include="examples\max31855.c" />
+    <ClCompile Include="examples\nes.c" />
+    <ClCompile Include="examples\okLed.c" />
+    <ClCompile Include="examples\PiFace\blink.c" />
+    <ClCompile Include="examples\PiFace\buttons.c" />
+    <ClCompile Include="examples\PiFace\ladder.c" />
+    <ClCompile Include="examples\PiFace\metro.c" />
+    <ClCompile Include="examples\PiFace\motor.c" />
+    <ClCompile Include="examples\PiFace\reaction.c" />
+    <ClCompile Include="examples\PiGlow\piglow.c" />
+    <ClCompile Include="examples\PiGlow\piGlow0.c" />
+    <ClCompile Include="examples\PiGlow\piGlow1.c" />
+    <ClCompile Include="examples\pwm.c" />
+    <ClCompile Include="examples\q2w\binary.c" />
+    <ClCompile Include="examples\q2w\blink-io.c" />
+    <ClCompile Include="examples\q2w\blink.c" />
+    <ClCompile Include="examples\q2w\bright.c" />
+    <ClCompile Include="examples\q2w\button.c" />
+    <ClCompile Include="examples\q2w\volts.c" />
+    <ClCompile Include="examples\rht03.c" />
+    <ClCompile Include="examples\scrollPhat\scphat.c" />
+    <ClCompile Include="examples\scrollPhat\test.c" />
+    <ClCompile Include="examples\serialRead.c" />
+    <ClCompile Include="examples\serialTest.c" />
+    <ClCompile Include="examples\servo.c" />
+    <ClCompile Include="examples\softPwm.c" />
+    <ClCompile Include="examples\softTone.c" />
+    <ClCompile Include="examples\speed.c" />
+    <ClCompile Include="examples\spiSpeed.c" />
+    <ClCompile Include="examples\wfi.c" />
+    <ClCompile Include="gpio\gpio.c" />
+    <ClCompile Include="gpio\readall.c" />
+    <ClCompile Include="wiringPiD\daemonise.c" />
+    <ClCompile Include="wiringPiD\network.c" />
+    <ClCompile Include="wiringPiD\runRemote.c" />
+    <ClCompile Include="wiringPiD\wiringpid.c" />
+    <ClCompile Include="wiringPi\ads1115.c" />
+    <ClCompile Include="wiringPi\bmp180.c" />
+    <ClCompile Include="wiringPi\drcNet.c" />
+    <ClCompile Include="wiringPi\drcSerial.c" />
+    <ClCompile Include="wiringPi\ds18b20.c" />
+    <ClCompile Include="wiringPi\htu21d.c" />
+    <ClCompile Include="wiringPi\max31855.c" />
+    <ClCompile Include="wiringPi\max5322.c" />
+    <ClCompile Include="wiringPi\mcp23008.c" />
+    <ClCompile Include="wiringPi\mcp23016.c" />
+    <ClCompile Include="wiringPi\mcp23017.c" />
+    <ClCompile Include="wiringPi\mcp23s08.c" />
+    <ClCompile Include="wiringPi\mcp23s17.c" />
+    <ClCompile Include="wiringPi\mcp3002.c" />
+    <ClCompile Include="wiringPi\mcp3004.c" />
+    <ClCompile Include="wiringPi\mcp3422.c" />
+    <ClCompile Include="wiringPi\mcp4802.c" />
+    <ClCompile Include="wiringPi\pcf8574.c" />
+    <ClCompile Include="wiringPi\pcf8591.c" />
+    <ClCompile Include="wiringPi\piHiPri.c" />
+    <ClCompile Include="wiringPi\piThread.c" />
+    <ClCompile Include="wiringPi\pseudoPins.c" />
+    <ClCompile Include="wiringPi\rht03.c" />
+    <ClCompile Include="wiringPi\sn3218.c" />
+    <ClCompile Include="wiringPi\softPwm.c" />
+    <ClCompile Include="wiringPi\softServo.c" />
+    <ClCompile Include="wiringPi\softTone.c" />
+    <ClCompile Include="wiringPi\sr595.c" />
+    <ClCompile Include="wiringPi\wiringPi.c" />
+    <ClCompile Include="wiringPi\wiringPiI2C.c" />
+    <ClCompile Include="wiringPi\wiringPiSPI.c" />
+    <ClCompile Include="wiringPi\wiringSerial.c" />
+    <ClCompile Include="wiringPi\wiringShift.c" />
+    <ClCompile Include="wiringPi\wpiExtensions.c" />
+  </ItemGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <RemotePreBuildEvent>
+      <Command>chmod +x build</Command>
+    </RemotePreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <RemotePreBuildEvent>
+      <Message>Add execution rights to build script</Message>
+    </RemotePreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <RemotePreBuildEvent>
+      <Command>chmod +x build</Command>
+    </RemotePreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <RemotePreBuildEvent>
+      <Message>Add execution rights to build script</Message>
+    </RemotePreBuildEvent>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
