@@ -70,13 +70,13 @@
     <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>./build clean; ./build</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>./build clean</RemoteCleanCommandLine>
-    <NMakeIncludeSearchPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;C:\Program Files %28x86%29\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\c++\6;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\c++\6;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>./build clean; ./build</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>./build clean</RemoteCleanCommandLine>
-    <NMakeIncludeSearchPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;C:\Program Files %28x86%29\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi\c++\6;C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\c++\6;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemGroup>
     <None Include="build" />
@@ -279,7 +279,7 @@
     <ClCompile Include="wiringPi\softServo.c" />
     <ClCompile Include="wiringPi\softTone.c" />
     <ClCompile Include="wiringPi\sr595.c" />
-    <ClCompile Include="wiringPi\wiringPi.c" />
+    <ClCompile Include="wiringPi\wiringPi.cpp" />
     <ClCompile Include="wiringPi\wiringPiI2C.c" />
     <ClCompile Include="wiringPi\wiringPiSPI.c" />
     <ClCompile Include="wiringPi\wiringSerial.c" />

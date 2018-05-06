@@ -52,11 +52,12 @@
 //		Change maxPins to numPins to more accurately reflect purpose
 
 
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <ctype.h>
+#include <cstdio>
+#include <cstdarg>
+#include <cstdint>
+#include <cstdlib>
+#include <functional>
+#include <vector>
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
@@ -297,7 +298,7 @@ static uint64_t epochMilli, epochMicro ;
 // Misc
 
 static int wiringPiMode = WPI_MODE_UNINITIALISED ;
-static volatile int    pinPass = -1 ;
+
 static pthread_mutex_t pinMutex ;
 
 // Debugging & Return codes
@@ -322,7 +323,11 @@ static int sysFds [64] =
 
 // ISR Data
 
-static void (*isrFunctions [64])(void) ;
+static std::vector<std::function<void()>> isrFunctions(64) ;
+
+static pthread_t isrThreads[64] ;
+
+static bool isrCancelled[64] = { false } ;
 
 
 // Doing it the Arduino way with lookup tables...
@@ -607,26 +612,26 @@ static uint8_t gpioToGpClkALT0 [] =
 
 static uint8_t gpioToClkCon [] =
 {
-         -1,        -1,        -1,        -1,        28,        30,        32,        -1,	//  0 ->  7
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1, 	//  8 -> 15
-         -1,        -1,        -1,        -1,        28,        30,        -1,        -1, 	// 16 -> 23
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 24 -> 31
-         28,        -1,        28,        -1,        -1,        -1,        -1,        -1,	// 32 -> 39
-         -1,        -1,        28,        30,        28,        -1,        -1,        -1,	// 40 -> 47
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 48 -> 55
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 56 -> 63
+        255,       255,       255,       255,        28,        30,        32,       255,	//  0 ->  7
+        255,       255,       255,       255,       255,       255,       255,       255, 	//  8 -> 15
+        255,       255,       255,       255,        28,        30,       255,       255, 	// 16 -> 23
+        255,       255,       255,       255,       255,       255,       255,       255,	// 24 -> 31
+         28,       255,        28,       255,       255,       255,       255,       255,	// 32 -> 39
+        255,       255,        28,        30,        28,       255,       255,       255,	// 40 -> 47
+        255,       255,       255,       255,       255,       255,       255,       255,	// 48 -> 55
+        255,       255,       255,       255,       255,       255,       255,       255,	// 56 -> 63
 } ;
 
 static uint8_t gpioToClkDiv [] =
 {
-         -1,        -1,        -1,        -1,        29,        31,        33,        -1,	//  0 ->  7
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1, 	//  8 -> 15
-         -1,        -1,        -1,        -1,        29,        31,        -1,        -1, 	// 16 -> 23
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 24 -> 31
-         29,        -1,        29,        -1,        -1,        -1,        -1,        -1,	// 32 -> 39
-         -1,        -1,        29,        31,        29,        -1,        -1,        -1,	// 40 -> 47
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 48 -> 55
-         -1,        -1,        -1,        -1,        -1,        -1,        -1,        -1,	// 56 -> 63
+        255,       255,       255,       255,        29,        31,        33,       255,	//  0 ->  7
+        255,       255,       255,       255,       255,       255,       255,       255, 	//  8 -> 15
+        255,       255,       255,       255,       255,        31,       255,       255, 	// 16 -> 23
+        255,       255,       255,       255,       255,       255,       255,       255,	// 24 -> 31
+         29,       255,        29,       255,       255,       255,       255,       255,	// 32 -> 39
+        255,       255,        29,        31,        29,       255,       255,       255,	// 40 -> 47
+        255,       255,       255,       255,       255,       255,       255,       255,	// 48 -> 55
+        255,       255,       255,       255,       255,       255,       255,       255,	// 56 -> 63
 } ;
 
 
@@ -1922,18 +1927,20 @@ int waitForInterrupt (int pin, int mS)
  *********************************************************************************
  */
 
-static void *interruptHandler (UNU void *arg)
+static void *interruptHandler (void *arg)
 {
-  int myPin ;
+  int myPin = (int)arg;
 
   (void)piHiPri (55) ;	// Only effective if we run as root
 
-  myPin   = pinPass ;
-  pinPass = -1 ;
-
   for (;;)
-    if (waitForInterrupt (myPin, -1) > 0)
+    if (waitForInterrupt (myPin, -1) > 0) {
+
+      //  If ISR cancellation has been required stop the thread
+      if(isrCancelled[myPin]) break;
+
       isrFunctions [myPin] () ;
+    }
 
   return NULL ;
 }
@@ -1944,12 +1951,13 @@ static void *interruptHandler (UNU void *arg)
  *	Pi Specific.
  *	Take the details and create an interrupt handler that will do a call-
  *	back to the user supplied function.
+ *  If function pointer is null interrupt on pin is disabled; in this case
+ *  mode value isn't important
  *********************************************************************************
  */
 
-int wiringPiISR (int pin, int mode, void (*function)(void))
+int wiringPiISR (int pin, int mode, std::function<void()> function)
 {
-  pthread_t threadId ;
   const char *modeS ;
   char fName   [64] ;
   char  pinS [8] ;
@@ -1970,11 +1978,22 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
   else
     bcmGpioPin = pin ;
 
-// Now export the pin and set the right edge
-//	We're going to use the gpio program to do this, so it assumes
-//	a full installation of wiringPi. It's a bit 'clunky', but it
-//	is a way that will work when we're running in "Sys" mode, as
-//	a non-root user. (without sudo)
+  // Now export the pin and set the right edge
+  //	We're going to use the gpio program to do this, so it assumes
+  //	a full installation of wiringPi. It's a bit 'clunky', but it
+  //	is a way that will work when we're running in "Sys" mode, as
+  //	a non-root user. (without sudo)
+
+  // When function is null, interrupt need to be disabled
+  if(function == nullptr) {
+
+    //  If no function is already present for given pin
+    //  then it has never been set nor needs to be unset
+    if(isrFunctions[bcmGpioPin] == nullptr) return 0 ;
+
+    // Trigger gpio edge none command for next code block
+    mode = INT_EDGE_NONE;
+  }
 
   if (mode != INT_EDGE_SETUP)
   {
@@ -1982,8 +2001,10 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
       modeS = "falling" ;
     else if (mode == INT_EDGE_RISING)
       modeS = "rising" ;
-    else
+    else if (mode == INT_EDGE_BOTH)
       modeS = "both" ;
+    else
+      modeS = "none" ;
 
     sprintf (pinS, "%d", bcmGpioPin) ;
 
@@ -1994,23 +2015,40 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
     {
       /**/ if (access ("/usr/local/bin/gpio", X_OK) == 0)
       {
-	execl ("/usr/local/bin/gpio", "gpio", "edge", pinS, modeS, (char *)NULL) ;
-	return wiringPiFailure (WPI_FATAL, "wiringPiISR: execl failed: %s\n", strerror (errno)) ;
+	      execl ("/usr/local/bin/gpio", "gpio", "edge", pinS, modeS, (char *)NULL) ;
+	      return wiringPiFailure (WPI_FATAL, "wiringPiISR: execl failed: %s\n", strerror (errno)) ;
       }
       else if (access ("/usr/bin/gpio", X_OK) == 0)
       {
-	execl ("/usr/bin/gpio", "gpio", "edge", pinS, modeS, (char *)NULL) ;
-	return wiringPiFailure (WPI_FATAL, "wiringPiISR: execl failed: %s\n", strerror (errno)) ;
+        execl ("/usr/bin/gpio", "gpio", "edge", pinS, modeS, (char *)NULL) ;
+        return wiringPiFailure (WPI_FATAL, "wiringPiISR: execl failed: %s\n", strerror (errno)) ;
       }
       else
-	return wiringPiFailure (WPI_FATAL, "wiringPiISR: Can't find gpio program\n") ;
+	    return wiringPiFailure (WPI_FATAL, "wiringPiISR: Can't find gpio program\n") ;
     }
     else		// Parent, wait
       wait (NULL) ;
   }
 
-// Now pre-open the /sys/class node - but it may already be open if
-//	we are in Sys mode...
+  // If function is null then interrupt has been disabled
+  // Now we need to stop and join the relative thread
+  if(function == NULL) {
+
+    pthread_mutex_lock(&pinMutex) ;
+
+    isrCancelled[bcmGpioPin] = true ;
+    c = 1 ;
+    write(sysFds [bcmGpioPin], &c, 1) ;
+    pthread_join(isrThreads [bcmGpioPin], NULL) ;
+    isrCancelled [bcmGpioPin] = false ;
+
+    pthread_mutex_unlock(&pinMutex) ;
+
+    return 0 ;
+  }
+
+  //  Now pre-open the /sys/class node - but it may already be open if
+  //	we are in Sys mode...
 
   if (sysFds [bcmGpioPin] == -1)
   {
@@ -2019,20 +2057,25 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
       return wiringPiFailure (WPI_FATAL, "wiringPiISR: unable to open %s: %s\n", fName, strerror (errno)) ;
   }
 
-// Clear any initial pending interrupt
+  // Clear any initial pending interrupt
 
   ioctl (sysFds [bcmGpioPin], FIONREAD, &count) ;
   for (i = 0 ; i < count ; ++i)
     read (sysFds [bcmGpioPin], &c, 1) ;
 
-  isrFunctions [pin] = function ;
+  isrFunctions [bcmGpioPin] = function ;
 
-  pthread_mutex_lock (&pinMutex) ;
-    pinPass = pin ;
-    pthread_create (&threadId, NULL, interruptHandler, NULL) ;
-    while (pinPass != -1)
-      delay (1) ;
-  pthread_mutex_unlock (&pinMutex) ;
+  pthread_mutex_lock(&pinMutex) ;
+
+  int retval = pthread_create (&(isrThreads [bcmGpioPin]), NULL, interruptHandler, (void*) bcmGpioPin) ;
+
+  pthread_mutex_unlock(&pinMutex) ;
+
+  if(retval) {
+    isrFunctions [bcmGpioPin] = NULL ;
+
+    return wiringPiFailure(WPI_FATAL, "wiringPiISR: unable to create pthread: %s\n", strerror (errno)) ;
+  }
 
   return 0 ;
 }

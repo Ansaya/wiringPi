@@ -42,12 +42,14 @@ DEFS	= -D_GNU_SOURCE
 CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Wextra -Winline $(INCLUDE) -pipe -fPIC
 #CFLAGS	= $(DEBUG) $(DEFS) -Wformat=2 -Wall -Wextra -Wconversion -Winline $(INCLUDE) -pipe -fPIC
 
+CXX	= g++
+CXXFLAGS= -std=c++11
+
 LIBS    = -lm -lpthread -lrt -lcrypt
 
 ###############################################################################
 
-SRC	=	wiringPi.c						\
-		wiringSerial.c wiringShift.c				\
+SRC	=	wiringSerial.c wiringShift.c				\
 		piHiPri.c piThread.c					\
 		wiringPiSPI.c wiringPiI2C.c				\
 		softPwm.c softTone.c					\
@@ -63,9 +65,12 @@ SRC	=	wiringPi.c						\
 		pseudoPins.c						\
 		wpiExtensions.c
 
+CXXSRC  = 	wiringPi.cpp
+
 HEADERS =	$(shell ls *.h)
 
 OBJ	=	$(SRC:.c=.o)
+CXXOBJ  = 	$(CXXSRC:.cpp=.o)
 
 all:		$(DYNAMIC)
 
@@ -73,24 +78,27 @@ all:		$(DYNAMIC)
 static:	
 		$Q cat noMoreStatic
 
-$(DYNAMIC):	$(OBJ)
+$(DYNAMIC):	$(OBJ) $(CXXOBJ)
 	$Q echo "[Link (Dynamic)]"
-	$Q $(CC) -shared -Wl,-soname,libwiringPi.so$(WIRINGPI_SONAME_SUFFIX) -o libwiringPi.so.$(VERSION) $(LIBS) $(OBJ)
+	$Q $(CXX) -shared -Wl,-soname,libwiringPi.so$(WIRINGPI_SONAME_SUFFIX) -o libwiringPi.so.$(VERSION) $(LIBS) $(OBJ) $(CXXOBJ)
 
 .c.o:
 	$Q echo [Compile] $<
 	$Q $(CC) -c $(CFLAGS) $< -o $@
 
+.cpp.o:
+	$Q echo [Compile] $<
+	$Q $(CXX) -c $(CFLAGS) $(CXXFLAGS) $< -o $@
 
 .PHONY:	clean
 clean:
 	$Q echo "[Clean]"
-	$Q rm -f $(OBJ) $(OBJ_I2C) *~ core tags Makefile.bak libwiringPi.*
+	$Q rm -f $(OBJ) $(CXXOBJ) $(OBJ_I2C) *~ core tags Makefile.bak libwiringPi.*
 
 .PHONY:	tags
-tags:	$(SRC)
+tags:	$(CXXSRC) $(SRC)
 	$Q echo [ctags]
-	$Q ctags $(SRC)
+	$Q ctags $(CXXSRC) $(SRC)
 
 
 .PHONY:	install
@@ -124,7 +132,7 @@ uninstall:
 
 .PHONY:	depend
 depend:
-	makedepend -Y $(SRC) $(SRC_I2C)
+	makedepend -Y $(CXXSRC) $(SRC) $(SRC_I2C)
 
 # DO NOT DELETE
 

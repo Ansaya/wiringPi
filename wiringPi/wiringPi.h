@@ -82,7 +82,8 @@
 #define	INT_EDGE_SETUP		0
 #define	INT_EDGE_FALLING	1
 #define	INT_EDGE_RISING		2
-#define	INT_EDGE_BOTH		3
+#define	INT_EDGE_BOTH		  3
+#define INT_EDGE_NONE     4
 
 // Pi model types and version numbers
 //	Intended for the GPIO program Use at your own risk.
@@ -127,6 +128,10 @@ extern const int   piMemorySize    [ 8] ;
 
 #define	WPI_FATAL	(1==1)
 #define	WPI_ALMOST	(1==2)
+
+#ifdef __cplusplus
+#include <functional>
+#endif
 
 
 // wiringPiNodeStruct:
@@ -238,7 +243,12 @@ extern          void digitalWriteByte2   (int value) ;
 //	(Also Pi hardware specific)
 
 extern int  waitForInterrupt    (int pin, int mS) ;
-extern int  wiringPiISR         (int pin, int mode, void (*function)(void)) ;
+#ifndef __cplusplus
+extern int  wiringPiISR         (int pin, int mode, void (*function) (void)) ;
+#else
+extern int  wiringPiISR         (int pin, int mode, std::function<void()> function) ;
+#endif
+
 
 // Threads
 
