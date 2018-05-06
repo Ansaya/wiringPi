@@ -1951,8 +1951,11 @@ static void *interruptHandler (void *arg)
  *	Pi Specific.
  *	Take the details and create an interrupt handler that will do a call-
  *	back to the user supplied function.
- *  If function pointer is null interrupt on pin is disabled; in this case
- *  mode value isn't important
+ *	Subsequent calls will erase previous set isr and callback details.
+ *  To change interrupt mode without changing the callback just pass nullptr as function.
+ *	To disable currently active interrupt set mode = INT_EDGE_NONE .
+ *	When function = nullptr no action is performed, unless isr disabling is requested as 
+ *	described above.
  *********************************************************************************
  */
 
@@ -1978,22 +1981,15 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   else
     bcmGpioPin = pin ;
 
+  // When function is null and interrupt is off there is nothing to do
+  if (function == nullptr && isrFunctions[bcmGpioPin] == nullptr)
+	  return 0;
+
   // Now export the pin and set the right edge
   //	We're going to use the gpio program to do this, so it assumes
   //	a full installation of wiringPi. It's a bit 'clunky', but it
   //	is a way that will work when we're running in "Sys" mode, as
   //	a non-root user. (without sudo)
-
-  // When function is null, interrupt need to be disabled
-  if(function == nullptr) {
-
-    //  If no function is already present for given pin
-    //  then it has never been set nor needs to be unset
-    if(isrFunctions[bcmGpioPin] == nullptr) return 0 ;
-
-    // Trigger gpio edge none command for next code block
-    mode = INT_EDGE_NONE;
-  }
 
   if (mode != INT_EDGE_SETUP)
   {
@@ -2030,22 +2026,31 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
       wait (NULL) ;
   }
 
-  // If function is null then interrupt has been disabled
-  // Now we need to stop and join the relative thread
-  if(function == NULL) {
+  //	Now if function is null only an isr mode change was requested
+  if (mode != INT_EDGE_NONE && function == nullptr)
+	  return 0 ;
+
+  //	If isr thread is active now needs to be stopped and cleared
+  if(isrFunctions [bcmGpioPin] != nullptr) {
 
     pthread_mutex_lock(&pinMutex) ;
 
+	// Trigger isr loop break and join relative thread
     isrCancelled[bcmGpioPin] = true ;
     c = 1 ;
     write(sysFds [bcmGpioPin], &c, 1) ;
     pthread_join(isrThreads [bcmGpioPin], NULL) ;
     isrCancelled [bcmGpioPin] = false ;
 
-    pthread_mutex_unlock(&pinMutex) ;
+	// Clear isr callback for this pin
+	isrFunctions[bcmGpioPin] = nullptr;
 
-    return 0 ;
+    pthread_mutex_unlock(&pinMutex) ;
   }
+
+  //	If mode is none, isr disabling has been completed now
+  if (mode == INT_EDGE_NONE)
+	  return 0 ;
 
   //  Now pre-open the /sys/class node - but it may already be open if
   //	we are in Sys mode...
@@ -2058,21 +2063,23 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   }
 
   // Clear any initial pending interrupt
-
   ioctl (sysFds [bcmGpioPin], FIONREAD, &count) ;
   for (i = 0 ; i < count ; ++i)
     read (sysFds [bcmGpioPin], &c, 1) ;
 
+  // Set new isr callback
   isrFunctions [bcmGpioPin] = function ;
 
+  // Start new isr thread
   pthread_mutex_lock(&pinMutex) ;
 
   int retval = pthread_create (&(isrThreads [bcmGpioPin]), NULL, interruptHandler, (void*) bcmGpioPin) ;
 
   pthread_mutex_unlock(&pinMutex) ;
 
+  // In case of errors during thread creation reset callback pointer and return error code
   if(retval) {
-    isrFunctions [bcmGpioPin] = NULL ;
+    isrFunctions [bcmGpioPin] = nullptr ;
 
     return wiringPiFailure(WPI_FATAL, "wiringPiISR: unable to create pthread: %s\n", strerror (errno)) ;
   }
