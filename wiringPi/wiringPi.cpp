@@ -2123,7 +2123,6 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
 
   // Pass pin to listen for on just created pipe
   retval = write (wakePipe [1], (void *) &bcmGpioPin, sizeof(int));
-  printf("wiringPiISR : passed %d bytes to wake pipe.\n", retval);
 
   // Create new isr listener thread and pass the other end of the pipe to it
   retval = pthread_create (&(isrThreads [bcmGpioPin]), NULL, interruptHandler, (void *) wakePipe[0]) ;
