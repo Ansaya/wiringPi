@@ -70,7 +70,7 @@
     <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>./build clean; ./build</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>./build clean</RemoteCleanCommandLine>
-    <NMakeIncludeSearchPath>$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\c++\6;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi\arm-linux-gnueabihf;$(DevEnvDir)VC\Linux\include\usr\include\armv8-pi;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <RemoteBuildCommandLine>./build</RemoteBuildCommandLine>

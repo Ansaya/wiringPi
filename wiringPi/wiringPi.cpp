@@ -57,7 +57,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <functional>
-#include <vector>
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
@@ -323,11 +322,17 @@ static int sysFds [64] =
 
 // ISR Data
 
-static std::vector<std::function<void()>> isrFunctions(64) ;
+//	Callback function pointers array for ISR
+static std::function<void()> isrFunctions[64] ;
 
+//	ISR listening threads array
 static pthread_t isrThreads[64] ;
 
-static bool isrCancelled[64] = { false } ;
+//	ISR cancellation requested bits array
+static volatile bool isrCancelled[64] = { false } ;
+
+//	Wake for cancellation pipe used to wake ISR listening threads
+static int wakeFD[64] = { -1 };
 
 
 // Doing it the Arduino way with lookup tables...
@@ -1927,20 +1932,49 @@ int waitForInterrupt (int pin, int mS)
  *********************************************************************************
  */
 
-static void *interruptHandler (void *arg)
+static void * interruptHandler (void *arg)
 {
-  int myPin = (int)arg;
-
   (void)piHiPri (55) ;	// Only effective if we run as root
 
-  for (;;)
-    if (waitForInterrupt (myPin, -1) > 0) {
+  // Retrieve wake pipe passed from wiringPiISR function
+  int wakePipe = (int)arg;
 
-      //  If ISR cancellation has been required stop the thread
-      if(isrCancelled[myPin]) break;
+  int bcmGpioPin = 0, pollState;
+  
+  // Read pin to listen for from the pipe
+  (void)read (wakePipe, (void *) &bcmGpioPin, sizeof(int)) ;
 
-      isrFunctions [myPin] () ;
+  uint8_t c;
+  struct pollfd polls[2];
+
+  // Initialize pin poll file descriptor
+  if ((polls[0].fd = sysFds[bcmGpioPin]) == -1)
+	  return NULL ;
+  polls[0].events = POLLPRI | POLLERR;
+
+  // Initialize wake pipe file descriptor
+  polls[1].fd = wakePipe;
+  polls[1].events = POLLRDNORM ;
+  
+  for (;;) {
+	//	Wait for an event to happen on pin or from the wake pipe
+	pollState = poll (polls, 2, -1) ;
+
+	//  If ISR cancellation has been required stop the thread
+	if (isrCancelled [bcmGpioPin]) 
+		break;
+
+    if (pollState > 0) {
+	  // Rewind and clear pin file descriptor
+	  lseek(polls[0].fd, 0, SEEK_SET);
+	  (void)read(polls[0].fd, &c, 1);
+
+	  // Execute callback function associated to this ISR
+      isrFunctions [bcmGpioPin] () ;
     }
+  }
+
+  close(wakePipe);
 
   return NULL ;
 }
@@ -2033,19 +2067,21 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   //	If isr thread is active now needs to be stopped and cleared
   if(isrFunctions [bcmGpioPin] != nullptr) {
 
-    pthread_mutex_lock(&pinMutex) ;
+    pthread_mutex_lock (&pinMutex) ;
 
-	// Trigger isr loop break and join relative thread
+	// Trigger poll function on isr thread and joins it
     isrCancelled[bcmGpioPin] = true ;
-    c = 1 ;
-    write(sysFds [bcmGpioPin], &c, 1) ;
+	c = 1 ;
+	write(wakeFD [bcmGpioPin], &c, 1) ;
     pthread_join(isrThreads [bcmGpioPin], NULL) ;
+
+	// Reset isr state to disabled
     isrCancelled [bcmGpioPin] = false ;
+	isrFunctions [bcmGpioPin] = nullptr ;
+	close(wakeFD [bcmGpioPin]) ;	
+	wakeFD [bcmGpioPin] = -1 ;
 
-	// Clear isr callback for this pin
-	isrFunctions[bcmGpioPin] = nullptr;
-
-    pthread_mutex_unlock(&pinMutex) ;
+    pthread_mutex_unlock (&pinMutex) ;
   }
 
   //	If mode is none, isr disabling has been completed now
@@ -2073,15 +2109,35 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   // Start new isr thread
   pthread_mutex_lock(&pinMutex) ;
 
-  int retval = pthread_create (&(isrThreads [bcmGpioPin]), NULL, interruptHandler, (void*) bcmGpioPin) ;
+  // Create wake pipe for new isr thread
+  int wakePipe [2] ;
+  int retval = pipe (wakePipe) ;
+  if (retval < 0) {
+	  pthread_mutex_unlock (&pinMutex) ;
+	  isrFunctions [bcmGpioPin] = nullptr;
+	  return wiringPiFailure (WPI_FATAL, "wiringPiISR: unable to create wake pipe for isr thread: %s\n", strerror(errno)) ;
+  }
 
-  pthread_mutex_unlock(&pinMutex) ;
+  // Save wake pipe for current thread
+  wakeFD [bcmGpioPin] = wakePipe [1] ;
+
+  // Pass pin to listen for on just created pipe
+  retval = write (wakePipe [1], (void *) &bcmGpioPin, sizeof(int));
+  printf("wiringPiISR : passed %d bytes to wake pipe.\n", retval);
+
+  // Create new isr listener thread and pass the other end of the pipe to it
+  retval = pthread_create (&(isrThreads [bcmGpioPin]), NULL, interruptHandler, (void *) wakePipe[0]) ;
+
+  pthread_mutex_unlock (&pinMutex) ;
 
   // In case of errors during thread creation reset callback pointer and return error code
   if(retval) {
     isrFunctions [bcmGpioPin] = nullptr ;
+	close (wakePipe [0]) ;
+	close (wakePipe [1]) ;
+	wakeFD[bcmGpioPin] = -1 ;
 
-    return wiringPiFailure(WPI_FATAL, "wiringPiISR: unable to create pthread: %s\n", strerror (errno)) ;
+    return wiringPiFailure (WPI_FATAL, "wiringPiISR: unable to create pthread: %s\n", strerror (errno)) ;
   }
 
   return 0 ;
