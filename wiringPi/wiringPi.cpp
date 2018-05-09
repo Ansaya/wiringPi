@@ -80,7 +80,6 @@
 // Environment Variables
 
 #define	ENV_DEBUG	"WIRINGPI_DEBUG"
-#define	ENV_CODES	"WIRINGPI_CODES"
 #define	ENV_GPIOMEM	"WIRINGPI_GPIOMEM"
 
 
@@ -300,10 +299,9 @@ static int wiringPiMode = WPI_MODE_UNINITIALISED ;
 
 static pthread_mutex_t pinMutex ;
 
-// Debugging & Return codes
+// Debugging
 
 int wiringPiDebug       = FALSE ;
-int wiringPiReturnCodes = FALSE ;
 
 // Use /dev/gpiomem ?
 
@@ -323,16 +321,21 @@ static int sysFds [64] =
 // ISR Data
 
 //	Callback function pointers array for ISR
+#ifndef __cplusplus
+static void (* isrFunctions [64]) (void);
+#else
 static std::function<void()> isrFunctions[64] ;
+#endif
 
 //	ISR listening threads array
 static pthread_t isrThreads[64] ;
 
 //	ISR cancellation requested bits array
-static volatile bool isrCancelled[64] = { false } ;
+//	NOTE: could have used bool, but it is for C compatibility
+static volatile unsigned char isrCancelled [64] = { FALSE } ;
 
 //	Wake for cancellation pipe used to wake ISR listening threads
-static int wakeFD[64] = { -1 };
+static int wakeFD [64] = { -1 };
 
 
 // Doing it the Arduino way with lookup tables...
@@ -657,7 +660,7 @@ int wiringPiFailure (int fatal, const char *message, ...)
   va_list argp ;
   char buffer [1024] ;
 
-  if (!fatal && wiringPiReturnCodes)
+  if (!fatal)
     return -1 ;
 
   va_start (argp, message) ;
@@ -1315,8 +1318,6 @@ struct wiringPiNodeStruct *wiringPiFindNode (int pin)
 
 static         void pinModeDummy             (UNU struct wiringPiNodeStruct *node, UNU int pin, UNU int mode)  { return ; }
 static         void pullUpDnControlDummy     (UNU struct wiringPiNodeStruct *node, UNU int pin, UNU int pud)   { return ; }
-static unsigned int digitalRead8Dummy        (UNU struct wiringPiNodeStruct *node, UNU int UNU pin)            { return 0 ; }
-static         void digitalWrite8Dummy       (UNU struct wiringPiNodeStruct *node, UNU int pin, UNU int value) { return ; }
 static          int digitalReadDummy         (UNU struct wiringPiNodeStruct *node, UNU int UNU pin)            { return LOW ; }
 static         void digitalWriteDummy        (UNU struct wiringPiNodeStruct *node, UNU int pin, UNU int value) { return ; }
 static         void pwmWriteDummy            (UNU struct wiringPiNodeStruct *node, UNU int pin, UNU int value) { return ; }
@@ -1348,9 +1349,7 @@ struct wiringPiNodeStruct *wiringPiNewNode (int pinBase, int numPins)
   node->pinMode          = pinModeDummy ;
   node->pullUpDnControl  = pullUpDnControlDummy ;
   node->digitalRead      = digitalReadDummy ;
-//node->digitalRead8     = digitalRead8Dummy ;
   node->digitalWrite     = digitalWriteDummy ;
-//node->digitalWrite8    = digitalWrite8Dummy ;
   node->pwmWrite         = pwmWriteDummy ;
   node->analogRead       = analogReadDummy ;
   node->analogWrite      = analogWriteDummy ;
@@ -1571,28 +1570,6 @@ int digitalRead (int pin)
   }
 }
 
-
-/*
- * digitalRead8:
- *	Read 8-bits (a byte) from given start pin.
- *********************************************************************************
-
-unsigned int digitalRead8 (int pin)
-{
-  struct wiringPiNodeStruct *node = wiringPiNodes ;
-
-  if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
-    return 0 ;
-  else
-  {
-    if ((node = wiringPiFindNode (pin)) == NULL)
-      return LOW ;
-    return node->digitalRead8 (node, pin) ;
-  }
-}
- */
-
-
 /*
  * digitalWrite:
  *	Set an output bit
@@ -1634,27 +1611,6 @@ void digitalWrite (int pin, int value)
       node->digitalWrite (node, pin, value) ;
   }
 }
-
-
-/*
- * digitalWrite8:
- *	Set an output 8-bit byte on the device from the given pin number
- *********************************************************************************
-
-void digitalWrite8 (int pin, int value)
-{
-  struct wiringPiNodeStruct *node = wiringPiNodes ;
-
-  if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
-    return ;
-  else
-  {
-    if ((node = wiringPiFindNode (pin)) != NULL)
-      node->digitalWrite8 (node, pin, value) ;
-  }
-}
- */
-
 
 /*
  * pwmWrite:
@@ -1877,17 +1833,6 @@ unsigned int digitalReadByte2 (void)
   return data ;
 }
 
-
-/*
- * waitForInterrupt:
- *	Pi Specific.
- *	Wait for Interrupt on a GPIO pin.
- *	This is actually done via the /sys/class/gpio interface regardless of
- *	the wiringPi access mode in-use. Maybe sometime it might get a better
- *	way for a bit more efficiency.
- *********************************************************************************
- */
-
 int waitForInterrupt (int pin, int mS)
 {
   int fd, x ;
@@ -1929,9 +1874,11 @@ int waitForInterrupt (int pin, int mS)
  *	This is a thread and gets started to wait for the interrupt we're
  *	hoping to catch. It will call the user-function when the interrupt
  *	fires.
+ *
+ *	The poll function in this thread is waiting on a wake pipe too: it
+ *	is used to wake and disable the thread when needed.
  *********************************************************************************
  */
-
 static void * interruptHandler (void *arg)
 {
   (void)piHiPri (55) ;	// Only effective if we run as root
@@ -1979,21 +1926,11 @@ static void * interruptHandler (void *arg)
   return NULL ;
 }
 
-
-/*
- * wiringPiISR:
- *	Pi Specific.
- *	Take the details and create an interrupt handler that will do a call-
- *	back to the user supplied function.
- *	Subsequent calls will erase previous set isr and callback details.
- *  To change interrupt mode without changing the callback just pass nullptr as function.
- *	To disable currently active interrupt set mode = INT_EDGE_NONE .
- *	When function = nullptr no action is performed, unless isr disabling is requested as 
- *	described above.
- *********************************************************************************
- */
-
+#ifndef __cplusplus
+int wiringPiISR (int pin, int mode, void (*function) (void))
+#else
 int wiringPiISR (int pin, int mode, std::function<void()> function)
+#endif
 {
   const char *modeS ;
   char fName   [64] ;
@@ -2016,7 +1953,7 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
     bcmGpioPin = pin ;
 
   // When function is null and interrupt is off there is nothing to do
-  if (function == nullptr && isrFunctions[bcmGpioPin] == nullptr)
+  if (function == NULL && isrFunctions [bcmGpioPin] == NULL)
 	  return 0;
 
   // Now export the pin and set the right edge
@@ -2061,23 +1998,23 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   }
 
   //	Now if function is null only an isr mode change was requested
-  if (mode != INT_EDGE_NONE && function == nullptr)
+  if (mode != INT_EDGE_NONE && function == NULL)
 	  return 0 ;
 
   //	If isr thread is active now needs to be stopped and cleared
-  if(isrFunctions [bcmGpioPin] != nullptr) {
+  if(isrFunctions [bcmGpioPin] != NULL) {
 
     pthread_mutex_lock (&pinMutex) ;
 
 	// Trigger poll function on isr thread and joins it
-    isrCancelled[bcmGpioPin] = true ;
+    isrCancelled[bcmGpioPin] = TRUE ;
 	c = 1 ;
 	write(wakeFD [bcmGpioPin], &c, 1) ;
     pthread_join(isrThreads [bcmGpioPin], NULL) ;
 
 	// Reset isr state to disabled
-    isrCancelled [bcmGpioPin] = false ;
-	isrFunctions [bcmGpioPin] = nullptr ;
+    isrCancelled [bcmGpioPin] = FALSE ;
+	isrFunctions [bcmGpioPin] = NULL ;
 	close(wakeFD [bcmGpioPin]) ;	
 	wakeFD [bcmGpioPin] = -1 ;
 
@@ -2114,7 +2051,7 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
   int retval = pipe (wakePipe) ;
   if (retval < 0) {
 	  pthread_mutex_unlock (&pinMutex) ;
-	  isrFunctions [bcmGpioPin] = nullptr;
+	  isrFunctions [bcmGpioPin] = NULL;
 	  return wiringPiFailure (WPI_FATAL, "wiringPiISR: unable to create wake pipe for isr thread: %s\n", strerror(errno)) ;
   }
 
@@ -2131,7 +2068,7 @@ int wiringPiISR (int pin, int mode, std::function<void()> function)
 
   // In case of errors during thread creation reset callback pointer and return error code
   if(retval) {
-    isrFunctions [bcmGpioPin] = nullptr ;
+    isrFunctions [bcmGpioPin] = NULL ;
 	close (wakePipe [0]) ;
 	close (wakePipe [1]) ;
 	wakeFD[bcmGpioPin] = -1 ;
@@ -2289,49 +2226,63 @@ unsigned int micros (void)
   return (uint32_t)(now - epochMicro) ;
 }
 
-/*
- * wiringPiVersion:
- *	Return our current version number
- *********************************************************************************
- */
-
 void wiringPiVersion (int *major, int *minor)
 {
   *major = VERSION_MAJOR ;
   *minor = VERSION_MINOR ;
 }
 
-
 /*
- * wiringPiSetup:
- *	Must be called once at the start of your program execution.
+ * wiringPiSetupSys:
  *
- * Default setup: Initialises the system into wiringPi Pin mode and uses the
- *	memory mapped hardware directly.
- *
- * Changed now to revert to "gpio" mode if we're running on a Compute Module.
- *********************************************************************************
+ * Initialisation using the /sys/class/gpio interface to the GPIO systems 
+ *	- slightly slower, but always usable as a non-root user, assuming the 
+ *	devices are already exported and setup correctly.
  */
+static void wiringPiSetupSys (void)
+{
+  int pin ;
+  char fName [128] ;
 
-int wiringPiSetup (void)
+  if (wiringPiDebug)
+    printf ("wiringPi: wiringPiSetupSys called\n") ;
+
+  if (piGpioLayout () == 1)
+  {
+     pinToGpio =  pinToGpioR1 ;
+    physToGpio = physToGpioR1 ;
+  }
+  else
+  {
+     pinToGpio =  pinToGpioR2 ;
+    physToGpio = physToGpioR2 ;
+  }
+
+// Open and scan the directory, looking for exported GPIOs, and pre-open
+//	the 'value' interface to speed things up for later
+  
+  for (pin = 0 ; pin < 64 ; ++pin)
+  {
+    sprintf (fName, "/sys/class/gpio/gpio%d/value", pin) ;
+    sysFds [pin] = open (fName, O_RDWR) ;
+  }
+}
+
+int wiringPiSetup (int wpi_mode)
 {
   int   fd ;
   int   model, rev, mem, maker, overVolted ;
 
-// It's actually a fatal error to call any of the wiringPiSetup routines more than once,
-//	(you run out of file handles!) but I'm fed-up with the useless twats who email
-//	me bleating that there is a bug in my code, so screw-em.
+  if (wpi_mode < 0 || wpi_mode >= WPI_MODE_COUNT)
+	return wiringPiFailure (WPI_FATAL, "wiringPiSetup : wpi mode requested "
+		"does not exists. (wpi mode: %d)", wpi_mode) ;
 
-  if (wiringPiSetuped)
-    return 0 ;
-
-  wiringPiSetuped = TRUE ;
+  if (wiringPiMode != WPI_MODE_UNINITIALISED && wiringPiMode != wpi_mode)
+    return wiringPiFailure (WPI_FATAL, "wiringPiSetup : setup function was called "
+		"multiple times with different mode requests.") ;
 
   if (getenv (ENV_DEBUG) != NULL)
     wiringPiDebug = TRUE ;
-
-  if (getenv (ENV_CODES) != NULL)
-    wiringPiReturnCodes = TRUE ;
 
   if (wiringPiDebug)
     printf ("wiringPi: wiringPiSetup called\n") ;
@@ -2340,14 +2291,32 @@ int wiringPiSetup (void)
 //	but it will give us information like the GPIO layout scheme (2 variants
 //	on the older 26-pin Pi's) and the GPIO peripheral base address.
 //	and if we're running on a compute module, then wiringPi pin numbers
-//	don't really many anything, so force native BCM mode anyway.
+//	don't really mean anything, so force native BCM mode anyway.
 
   piBoardId (&model, &rev, &mem, &maker, &overVolted) ;
 
-  if ((model == PI_MODEL_CM) || (model == PI_MODEL_CM3))
-    wiringPiMode = WPI_MODE_GPIO ;
-  else
-    wiringPiMode = WPI_MODE_PINS ;
+  switch (wpi_mode)
+  {
+  case WPI_MODE_PINS:
+	if ((model == PI_MODEL_CM) || (model == PI_MODEL_CM3))
+	  wiringPiMode = WPI_MODE_GPIO ;
+	else
+	  wiringPiMode = WPI_MODE_PINS ;
+	break ;
+
+  case WPI_MODE_GPIO_SYS :
+	wiringPiSetupSys () ;
+	wiringPiSetuped = TRUE ;
+	return 0 ;
+
+  case WPI_MODE_PIFACE :
+	return wiringPiFailure (WPI_FATAL, "wiringPiSetup : to initialize PiFace "
+	  "you need to use piFaceSetup from devLib.") ;
+
+  default:
+	wiringPiMode = wpi_mode ;
+	break ;
+  }
 
   /**/ if (piGpioLayout () == 1)	// A, B, Rev 1, 1.1
   {
@@ -2453,105 +2422,7 @@ int wiringPiSetup (void)
 
   initialiseEpoch () ;
 
-  return 0 ;
-}
-
-
-/*
- * wiringPiSetupGpio:
- *	Must be called once at the start of your program execution.
- *
- * GPIO setup: Initialises the system into GPIO Pin mode and uses the
- *	memory mapped hardware directly.
- *********************************************************************************
- */
-
-int wiringPiSetupGpio (void)
-{
-  (void)wiringPiSetup () ;
-
-  if (wiringPiDebug)
-    printf ("wiringPi: wiringPiSetupGpio called\n") ;
-
-  wiringPiMode = WPI_MODE_GPIO ;
-
-  return 0 ;
-}
-
-
-/*
- * wiringPiSetupPhys:
- *	Must be called once at the start of your program execution.
- *
- * Phys setup: Initialises the system into Physical Pin mode and uses the
- *	memory mapped hardware directly.
- *********************************************************************************
- */
-
-int wiringPiSetupPhys (void)
-{
-  (void)wiringPiSetup () ;
-
-  if (wiringPiDebug)
-    printf ("wiringPi: wiringPiSetupPhys called\n") ;
-
-  wiringPiMode = WPI_MODE_PHYS ;
-
-  return 0 ;
-}
-
-
-/*
- * wiringPiSetupSys:
- *	Must be called once at the start of your program execution.
- *
- * Initialisation (again), however this time we are using the /sys/class/gpio
- *	interface to the GPIO systems - slightly slower, but always usable as
- *	a non-root user, assuming the devices are already exported and setup correctly.
- */
-
-int wiringPiSetupSys (void)
-{
-  int pin ;
-  char fName [128] ;
-
-  if (wiringPiSetuped)
-    return 0 ;
-
-  wiringPiSetuped = TRUE ;
-
-  if (getenv (ENV_DEBUG) != NULL)
-    wiringPiDebug = TRUE ;
-
-  if (getenv (ENV_CODES) != NULL)
-    wiringPiReturnCodes = TRUE ;
-
-  if (wiringPiDebug)
-    printf ("wiringPi: wiringPiSetupSys called\n") ;
-
-  if (piGpioLayout () == 1)
-  {
-     pinToGpio =  pinToGpioR1 ;
-    physToGpio = physToGpioR1 ;
-  }
-  else
-  {
-     pinToGpio =  pinToGpioR2 ;
-    physToGpio = physToGpioR2 ;
-  }
-
-// Open and scan the directory, looking for exported GPIOs, and pre-open
-//	the 'value' interface to speed things up for later
-  
-  for (pin = 0 ; pin < 64 ; ++pin)
-  {
-    sprintf (fName, "/sys/class/gpio/gpio%d/value", pin) ;
-    sysFds [pin] = open (fName, O_RDWR) ;
-  }
-
-  initialiseEpoch () ;
-
-  wiringPiMode = WPI_MODE_GPIO_SYS ;
+  wiringPiSetuped = TRUE;
 
   return 0 ;
 }

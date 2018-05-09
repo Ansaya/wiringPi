@@ -832,7 +832,7 @@ static void doUsbP (int argc, char *argv [])
     
 // Make sure we start in BCM_GPIO mode
 
-  wiringPiSetupGpio () ;
+  wiringPiSetup (WPI_MODE_GPIO) ;
 
   if ((strcasecmp (argv [2], "high") == 0) || (strcasecmp (argv [2], "hi") == 0))
   {
@@ -1403,7 +1403,7 @@ int main (int argc, char *argv [])
 
   if (strcasecmp (argv [1], "allreadall") == 0)
   {
-    wiringPiSetupGpio () ;
+    wiringPiSetup (WPI_MODE_GPIO) ;
     doAllReadall      () ;
     return 0 ;
   }
@@ -1412,7 +1412,7 @@ int main (int argc, char *argv [])
 
   /**/ if (strcasecmp (argv [1], "-g") == 0)
   {
-    wiringPiSetupGpio () ;
+    wiringPiSetup (WPI_MODE_GPIO) ;
 
     for (i = 2 ; i < argc ; ++i)
       argv [i - 1] = argv [i] ;
@@ -1424,7 +1424,7 @@ int main (int argc, char *argv [])
 
   else if (strcasecmp (argv [1], "-1") == 0)
   {
-    wiringPiSetupPhys () ;
+    wiringPiSetup (WPI_MODE_GPIO_SYS) ;
 
     for (i = 2 ; i < argc ; ++i)
       argv [i - 1] = argv [i] ;
@@ -1458,7 +1458,7 @@ int main (int argc, char *argv [])
 
   else
   {
-    wiringPiSetup () ;
+    wiringPiSetup (WPI_MODE_PINS) ;
     wpMode = WPI_MODE_PINS ;
   }
 

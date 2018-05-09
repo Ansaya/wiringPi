@@ -46,12 +46,13 @@
 
 // wiringPi modes
 
+#define	WPI_MODE_UNINITIALISED	-1
 #define	WPI_MODE_PINS		 0
 #define	WPI_MODE_GPIO		 1
 #define	WPI_MODE_GPIO_SYS	 2
 #define	WPI_MODE_PHYS		 3
 #define	WPI_MODE_PIFACE		 4
-#define	WPI_MODE_UNINITIALISED	-1
+#define WPI_MODE_COUNT		 5
 
 // Pin modes
 
@@ -197,28 +198,39 @@ extern int wiringPiFailure (int fatal, const char *message, ...) ;
 extern struct wiringPiNodeStruct *wiringPiFindNode (int pin) ;
 extern struct wiringPiNodeStruct *wiringPiNewNode  (int pinBase, int numPins) ;
 
+/*
+* wiringPiVersion:
+*	Return our current version number
+*/
 extern void wiringPiVersion	(int *major, int *minor) ;
-extern int  wiringPiSetup       (void) ;
-extern int  wiringPiSetupSys    (void) ;
-extern int  wiringPiSetupGpio   (void) ;
-extern int  wiringPiSetupPhys   (void) ;
+
+/*
+* wiringPiSetup:
+*	Must be called once at the start of your program execution.
+*	Multiple calls with the same wpi_mode are accepted as well, fatal error happens
+*	only for subsequent calls with different mode requests.
+*
+* Default setup: Initialises the system into wiringPi Pin mode and uses the
+*	memory mapped hardware directly.
+*
+* Changed now to revert to "gpio" mode if we're running on a Compute Module.
+*/
+extern int  wiringPiSetup       (int wpi_mode) ;
 
 extern          void pinModeAlt          (int pin, int mode) ;
 extern          void pinMode             (int pin, int mode) ;
 extern          void pullUpDnControl     (int pin, int pud) ;
 extern          int  digitalRead         (int pin) ;
 extern          void digitalWrite        (int pin, int value) ;
-extern unsigned int  digitalRead8        (int pin) ;
-extern          void digitalWrite8       (int pin, int value) ;
+//extern unsigned int  digitalRead8        (int pin) ;
+//extern          void digitalWrite8       (int pin, int value) ;
 extern          void pwmWrite            (int pin, int value) ;
 extern          int  analogRead          (int pin) ;
 extern          void analogWrite         (int pin, int value) ;
 
 // PiFace specifics 
-//	(Deprecated)
 
-extern int  wiringPiSetupPiFace (void) ;
-extern int  wiringPiSetupPiFaceForGpioProg (void) ;	// Don't use this - for gpio program only
+
 
 // On-Board Raspberry Pi hardware specific stuff
 
@@ -242,10 +254,29 @@ extern          void digitalWriteByte2   (int value) ;
 // Interrupts
 //	(Also Pi hardware specific)
 
+/*
+* waitForInterrupt:
+*	Pi Specific.
+*	Wait for Interrupt on a GPIO pin.
+*	This is actually done via the /sys/class/gpio interface regardless of
+*	the wiringPi access mode in-use. Maybe sometime it might get a better
+*	way for a bit more efficiency.
+*/
 extern int  waitForInterrupt    (int pin, int mS) ;
 #ifndef __cplusplus
 extern int  wiringPiISR         (int pin, int mode, void (*function) (void)) ;
 #else
+/*
+* wiringPiISR:
+*	Pi Specific.
+*	Take the details and create an interrupt handler that will do a call-
+*	back to the user supplied function.
+*	Subsequent calls will erase previous set isr and callback details.
+*
+*  To change interrupt mode without changing the callback just pass nullptr as function.
+*	To disable currently active interrupt set mode = INT_EDGE_NONE .
+*
+*/
 extern int  wiringPiISR         (int pin, int mode, std::function<void()> function) ;
 #endif
 
