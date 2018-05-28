@@ -139,7 +139,6 @@ static volatile unsigned int GPIO_PWM ;
 #define	BLOCK_SIZE		(4*1024)
 
 static unsigned int usingGpioMem    = FALSE ;
-static          int wiringPiSetuped = FALSE ;
 
 // PWM
 //	Word offsets into the PWM control region
@@ -673,24 +672,6 @@ int wiringPiFailure (int fatal, const char *message, ...)
   return 0 ;
 }
 
-
-/*
- * setupCheck
- *	Another sanity check because some users forget to call the setup
- *	function. Mosty because they need feeding C drip by drip )-:
- *********************************************************************************
- */
-
-static void setupCheck (const char *fName)
-{
-  if (!wiringPiSetuped)
-  {
-    fprintf (stderr, "%s: You have not called one of the wiringPiSetup\n"
-	"  functions, so I'm aborting your program before it crashes anyway.\n", fName) ;
-    exit (EXIT_FAILURE) ;
-  }
-}
-
 /*
  * gpioMemCheck:
  *	See if we're using the /dev/gpiomem interface, if-so then some operations
@@ -706,7 +687,6 @@ static void usingGpioMemCheck (const char *what)
     exit (EXIT_FAILURE) ;
   }
 }
-
 
 
 /*
@@ -1392,8 +1372,6 @@ void pinModeAlt (int pin, int mode)
 {
   int fSel, shift ;
 
-  setupCheck ("pinModeAlt") ;
-
   if ((pin & PI_GPIO_MASK) == 0)		// On-board pin
   {
     /**/ if (wiringPiMode == WPI_MODE_PINS)
@@ -1422,8 +1400,6 @@ void pinMode (int pin, int mode)
   int    fSel, shift, alt ;
   struct wiringPiNodeStruct *node = wiringPiNodes ;
   int origPin = pin ;
-
-  setupCheck ("pinMode") ;
 
   if ((pin & PI_GPIO_MASK) == 0)		// On-board pin
   {
@@ -1501,8 +1477,6 @@ void pinMode (int pin, int mode)
 void pullUpDnControl (int pin, int pud)
 {
   struct wiringPiNodeStruct *node = wiringPiNodes ;
-
-  setupCheck ("pullUpDnControl") ;
 
   if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
   {
@@ -1622,8 +1596,6 @@ void pwmWrite (int pin, int value)
 {
   struct wiringPiNodeStruct *node = wiringPiNodes ;
 
-  setupCheck ("pwmWrite") ;
-
   if ((pin & PI_GPIO_MASK) == 0)		// On-Board Pin
   {
     /**/ if (wiringPiMode == WPI_MODE_PINS)
@@ -1692,8 +1664,6 @@ void analogWrite (int pin, int value)
 void pwmToneWrite (int pin, int freq)
 {
   int range ;
-
-  setupCheck ("pwmToneWrite") ;
 
   if (freq == 0)
     pwmWrite (pin, 0) ;             // Off
@@ -2306,7 +2276,6 @@ int wiringPiSetup (int wpi_mode)
 
   case WPI_MODE_GPIO_SYS :
 	wiringPiSetupSys () ;
-	wiringPiSetuped = TRUE ;
 	return 0 ;
 
   case WPI_MODE_PIFACE :
@@ -2421,8 +2390,6 @@ int wiringPiSetup (int wpi_mode)
   _wiringPiTimer = timer ;
 
   initialiseEpoch () ;
-
-  wiringPiSetuped = TRUE;
 
   return 0 ;
 }

@@ -629,6 +629,6 @@
     <Text Include="examples\README.TXT">
       <Filter>examples</Filter>
     </Text>
-    <Text Include="README.TXT" />
+    <Text Include="README.md" />
   </ItemGroup>
 </Project>
